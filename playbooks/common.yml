@@ -1,0 +1,40 @@
+---
+- name: Common configuration for all servers
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Update and upgrade package list for RedHat-based systems
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Update the package cache for Debian-based systems
+      apt:
+        update_cache: yes
+        cache_valid_time: 86400
+      when: ansible_os_family == "Debian"
+    
+    - name: Ensure Wireshark is installed at the latest version
+      package:
+        name: wireshark
+        state: latest
+    
+    - name: Create a directory at /opt/example
+      file:
+        path: "/opt/example"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+  
+    - name: Set the server timezone to UTC
+      timezone:
+        name: UTC
+
+    - name: Execute a custom script via Bash
+      shell: /path/to/script.sh
+      args:
+        chdir: /path/to
+        executable: /bin/bash
