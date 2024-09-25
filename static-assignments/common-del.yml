@@ -1,1 +1,18 @@
+---
+- name: Common Configuration
+  hosts: all
+  remote_user: ec2-user  # or appropriate user for your servers
+  become: yes
+  become_user: root
+  tasks:
+    - name: Delete Wireshark on RedHat-based systems
+      yum:
+        name: wireshark
+        state: absent
+      when: ansible_os_family == "RedHat"
 
+    - name: Delete Wireshark on Debian-based systems
+      apt:
+        name: wireshark
+        state: absent
+      when: ansible_os_family == "Debian"
