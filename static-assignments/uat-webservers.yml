@@ -1,5 +1,4 @@
 ---
-#- import_playbook: ../static-assignments/common-del.yml
 - name: UAT Web Server Configuration
   hosts: uat-webservers
   become: true
