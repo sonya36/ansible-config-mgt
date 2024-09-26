@@ -33,8 +33,3 @@
       timezone:
         name: UTC
 
-    - name: Execute a custom script via Bash
-      shell: /path/to/script.sh
-      args:
-        chdir: /path/to
-        executable: /bin/bash
