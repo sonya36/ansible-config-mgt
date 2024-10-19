@@ -1,5 +1,5 @@
 # ---
-#- import_playbook: ../static-assignments/common-del.yml
+# #- import_playbook: ../static-assignments/common-del.yml
 # - name: UAT Web Server Configuration
 #   hosts: uat-webservers
 #   become: true
@@ -16,5 +16,8 @@
 
 - import_playbook: ../static-assignments/common.yml
 
-- import_playbook: ../static-assignments/uat-webservers.yml
+- import_playbook: ../static-assignments/uat_webservers.yml
 
+- import_playbook: ../static-assignments/loadbalancers.yml
+
+- import_playbook: ../static-assignments/db-servers.yml
