@@ -1,0 +1,4 @@
+---
+load_balancer_is_required: true
+enable_nginx_lb: true
+enable_apache_lb: false
