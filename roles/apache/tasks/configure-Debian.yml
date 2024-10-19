@@ -9,6 +9,34 @@
   with_items: "{{ apache_ports_configuration_items }}"
   notify: restart apache
 
+- name: Enable Apache modules
+  ansible.builtin.command:
+    cmd: "a2enmod {{ item }}"
+  loop:
+    - rewrite
+    - proxy
+    - proxy_balancer
+    - proxy_http
+    - headers
+    - lbmethod_bytraffic
+    - lbmethod_byrequests
+  notify: restart apache
+  become: true
+- name: Insert load balancer configuration into Apache virtual host
+  ansible.builtin.blockinfile:
+    path: /etc/apache2/sites-available/000-default.conf
+    block: |
+      <Proxy "balancer://mycluster">
+        BalancerMember http://172.31.41.29:80
+        BalancerMember http://172.31.37.30:80
+        ProxySet lbmethod=byrequests
+      </Proxy>
+      ProxyPass "/" "balancer://mycluster/"
+      ProxyPassReverse "/" "balancer://mycluster/"
+    marker: "#  ANSIBLE MANAGED BLOCK"
+    insertbefore: "</VirtualHost>"
+  notify: restart apache
+  become: true
 - name: Enable Apache mods.
   file:
     src: "{{ apache_server_root }}/mods-available/{{ item }}.load"
