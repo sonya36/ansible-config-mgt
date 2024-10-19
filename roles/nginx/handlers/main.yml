@@ -9,3 +9,4 @@
 - name: reload nginx
   service: name=nginx state=reloaded
   when: nginx_service_state == "started"
+  become: yes

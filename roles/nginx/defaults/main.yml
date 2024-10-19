@@ -67,30 +67,31 @@ nginx_remove_default_vhost: false
 nginx_listen_ipv6: true
 
 nginx_vhosts: []
-# Example vhost below, showing all available options:
-# - listen: "80" # default: "80"
-#   server_name: "example.com" # default: N/A
-#   root: "/var/www/example.com" # default: N/A
-#   index: "index.html index.htm" # default: "index.html index.htm"
-#   filename: "example.com.conf" # Can be used to set the vhost filename.
-#
-#   # Properties that are only added if defined:
-#   server_name_redirect: "www.example.com" # default: N/A
-#   error_page: ""
-#   access_log: ""
-#   error_log: ""
-#   extra_parameters: "" # Can be used to add extra config blocks (multiline).
-#   template: "" # Can be used to override the `nginx_vhost_template` per host.
-#   state: "absent" # To remove the vhost configuration.
+Example vhost below, showing all available options:
+- listen: "80" # default: "80"
+  server_name: "example.com" # default: N/A
+  root: "/var/www/example.com" # default: N/A
+  index: "index.html index.htm" # default: "index.html index.htm"
+  filename: "example.com.conf" # Can be used to set the vhost filename.
 
-nginx_upstreams: []
-# - name: myapp1
-#   strategy: "ip_hash" # "least_conn", etc.
-#   keepalive: 16 # optional
-#   servers:
-#     - "srv1.example.com"
-#     - "srv2.example.com weight=3"
-#     - "srv3.example.com"
+  # Properties that are only added if defined:
+  server_name_redirect: "www.example.com" # default: N/A
+  error_page: ""
+  access_log: ""
+  error_log: ""
+  extra_parameters: "" # Can be used to add extra config blocks (multiline).
+  template: "" # Can be used to override the `nginx_vhost_template` per host.
+  state: "absent" # To remove the vhost configuration.
+
+nginx_upstreams:
+  - name: myapp1
+    strategy: "ip_hash"  # Load balancing strategy
+    keepalive: 16         # Optional: number of idle keepalive connections
+    servers:
+      - ip: 172.31.43.39
+        weight: 3
+      - ip: 172.31.41.20
+        weight: 3
 
 nginx_log_format: |-
   '$remote_addr - $remote_user [$time_local] "$request" '
