@@ -16,5 +16,25 @@ pipeline {
                 }
             }
         }
+
+        stage('Package') {
+            steps {
+                echo 'Packaging the application...'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying the application...'
+            }
+        }
+
+        stage('Clean up') {
+            steps {
+                echo 'Cleaning up...'
+            }
+        }
     }
 }
+
+
