@@ -1,37 +1,67 @@
 pipeline {
     agent any
 
+    environment {
+        ANSIBLE_CONFIG = "${WORKSPACE}/deploy/ansible.cfg"
+    }
+
     stages {
-        stage('Build') {
+        stage('Initial cleanup') {
             steps {
-                script {
-                    sh 'echo "Building Stage"'
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                script {
-                    sh 'echo "Testing Stage"'
+                dir("${WORKSPACE}") {
+                    deleteDir()
                 }
             }
         }
 
-        stage('Package') {
+        stage('Checkout SCM') {
             steps {
-                echo 'Packaging the application...'
+                git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
             }
         }
 
-        stage('Deploy') {
+        stage('Prepare Ansible For Execution') {
             steps {
-                echo 'Deploying the application...'
+                sh 'echo ${WORKSPACE}'
+                sh 'sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'
             }
         }
 
-        stage('Clean up') {
+        stage('Test SSH Connections') {
             steps {
-                echo 'Cleaning up...'
+                script {
+                    def allHosts = [
+                        'ubuntu@172.31.42.158',
+                        'ec2-user@172.31.42.158'
+                    ]
+
+                    sshagent(['private-key']) {
+                        allHosts.each { host ->
+                            sh "ssh -o StrictHostKeyChecking=no ${host} exit"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Run Ansible playbook') {
+            steps {
+                sshagent(['private-key']) {
+                    ansiblePlaybook(
+                        become: true,
+                        credentialsId: 'private-key',
+                        disableHostKeyChecking: true,
+                        installation: 'ansible',
+                        inventory: '${WORKSPACE}/inventory/dev.yml',
+                        playbook: '${WORKSPACE}/playbooks/site.yml'
+                    )
+                }
+            }
+        }
+
+        stage('Clean Workspace after build') {
+            steps {
+                cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenUnstable: true, deleteDirs: true)
             }
         }
     }
