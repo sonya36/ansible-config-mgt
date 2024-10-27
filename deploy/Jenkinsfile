@@ -26,7 +26,6 @@ pipeline {
                 sh 'sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'
             }
         }
-
         stage('Test SSH Connections') {
             steps {
                 script {
@@ -37,12 +36,18 @@ pipeline {
 
                     sshagent(['private-key']) {
                         allHosts.each { host ->
-                            sh "ssh -o StrictHostKeyChecking=no ${host} exit"
+                            def result = sh(script: "ssh -o StrictHostKeyChecking=no ${host} exit", returnStatus: true)
+                            if (result != 0) {
+                                error "SSH connection failed for ${host}"
+                            } else {
+                                echo "Successfully connected to ${host}"
+                            }
                         }
                     }
                 }
             }
         }
+
 
         stage('Run Ansible playbook') {
             steps {
