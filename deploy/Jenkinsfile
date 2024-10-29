@@ -21,12 +21,12 @@ pipeline {
             }
         }
 
-       stage('Prepare Ansible For Execution') {
-            steps {
-                sh 'echo ${WORKSPACE}'
-                sh 'sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'
-            }
-        }
+        stage('Prepare Ansible For Execution') {
+                                steps {
+                                sh 'echo ${WORKSPACE}'
+                                sh 'sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'
+                                }
+                            }
 
         stage('Test SSH Connections') {
             steps {
