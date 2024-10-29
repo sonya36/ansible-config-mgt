@@ -34,7 +34,7 @@
         - always
 
 - name: tooling
-  import_playbook: ../static-assignments/uat_webservers.yml
+  import_playbook: ../static-assignments/uat-webservers.yml
 
 - name: nginx
   import_playbook: ../static-assignments/loadbalancers.yml
