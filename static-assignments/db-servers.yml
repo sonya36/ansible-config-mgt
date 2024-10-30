@@ -1,4 +1,4 @@
-- hosts: db_servers
+- hosts: db
   become: yes
   vars_files:
     - vars/main.yml
