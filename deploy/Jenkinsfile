@@ -10,7 +10,7 @@ pipeline {
         stage("Initial cleanup") {
             steps {
                 dir("${WORKSPACE}") {
-                    deleteDir()
+                    deleteDir() // Cleans up the workspace before starting the build
                 }
             }
         }
@@ -20,25 +20,20 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
             }
         }
-            
+
         stage('Prepare Ansible For Execution') {
             steps {
-                // Echo the current directory for debugging
+                // Display current workspace for debugging
                 sh 'echo ${WORKSPACE}'
                 
-                // Update or insert the roles_path in ansible.cfg
+                // Update or set the roles_path in ansible.cfg
                 sh '''
-                    if grep -q "^roles_path=" "${WORKSPACE}/deploy/ansible.cfg"; then
-                        # Update existing roles_path
-                        sed -i "s|^roles_path=.*|roles_path=${WORKSPACE}/roles|" "${WORKSPACE}/deploy/ansible.cfg"
-                    else
-                        # Add roles_path if it doesn't exist
-                        echo "roles_path=${WORKSPACE}/roles" >> "${WORKSPACE}/deploy/ansible.cfg"
-                    fi
+                    # Ensure the roles_path is either added or updated
+                    sed -i '/^roles_path=/d' "${WORKSPACE}/deploy/ansible.cfg"
+                    echo "roles_path=${WORKSPACE}/roles" >> "${WORKSPACE}/deploy/ansible.cfg"
                 '''
             }
         }
-
 
         stage('Test SSH Connections') {
             steps {
