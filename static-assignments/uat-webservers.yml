@@ -1,6 +1,6 @@
 ---
 - name: UAT Web Server Configuration
-  hosts: uat-webservers
+  hosts: tooling
   become: true
   roles:
     - webserver
