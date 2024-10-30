@@ -20,19 +20,24 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
             }
         }
+            
         stage('Prepare Ansible For Execution') {
-            steps {
-                sh 'echo ${WORKSPACE}'
-                // Check if the exact roles_path line already exists and add it only if it doesn’t
-                sh '''
-                    if ! grep -q "^roles_path=${WORKSPACE}/roles$" ${WORKSPACE}/deploy/ansible.cfg; then
-                        sed -i "/^roles_path=/d" ${WORKSPACE}/deploy/ansible.cfg
-                        sed -i "3i roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg
-                    fi
-                '''
+                steps {
+                    // Echo the current directory for debugging
+                    sh 'echo $'
+                    
+                    // Update or insert the roles_path in ansible.cfg
+                    sh '''
+                        if grep -q "^roles_path=" $/deploy/ansible.cfg; then
+                            # Update existing roles_path
+                            sed -i "s|^roles_path=.*|roles_path=$/roles|" $/deploy/ansible.cfg
+                        else
+                            # Add roles_path if it doesn't exist
+                            echo "roles_path=$/roles" >> $/deploy/ansible.cfg
+                        fi
+                    '''
+                }
             }
-        }
-
 
 
         stage('Test SSH Connections') {
