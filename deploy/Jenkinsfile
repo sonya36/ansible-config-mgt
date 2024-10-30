@@ -23,10 +23,16 @@ pipeline {
         stage('Prepare Ansible For Execution') {
             steps {
                 sh 'echo ${WORKSPACE}'
-                // Check if roles_path is already present; if not, add it.
-                sh 'grep -q "^roles_path=" ${WORKSPACE}/deploy/ansible.cfg || sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'
+                // Check if the exact roles_path line already exists and add it only if it doesn’t
+                sh '''
+                    if ! grep -q "^roles_path=${WORKSPACE}/roles$" ${WORKSPACE}/deploy/ansible.cfg; then
+                        sed -i "/^roles_path=/d" ${WORKSPACE}/deploy/ansible.cfg
+                        sed -i "3i roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg
+                    fi
+                '''
             }
         }
+
 
 
         stage('Test SSH Connections') {
