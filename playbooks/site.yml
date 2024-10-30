@@ -39,6 +39,6 @@
 - name: nginx
   import_playbook: ../static-assignments/loadbalancers.yml
 
-- name: db
+- name: database
   import_playbook: ../static-assignments/db-servers.yml
 

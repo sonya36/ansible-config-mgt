@@ -41,7 +41,7 @@ pipeline {
                     def hosts = [
                         [group: 'tooling', ip: '172.31.45.158', user: 'ec2-user'],
                         [group: 'nginx', ip: '172.31.44.244', user: 'ubuntu'],
-                        [group: 'db', ip: '172.31.40.191', user: 'ubuntu']
+                        [group: 'database', ip: '172.31.40.191', user: 'ubuntu']
                     ]
                     
                     sshagent(['private-key']) {
