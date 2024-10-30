@@ -7,13 +7,10 @@
       tags:
         - always
 
-- hosts: tooling
-  import_playbook: ../static-assignments/uat-webservers.yml
+- import_playbook: ../static-assignments/uat-webservers.yml
 
-- hosts: nginx
-  import_playbook: ../static-assignments/loadbalancers.yml
+- import_playbook: ../static-assignments/loadbalancers.yml
 
-- hosts: database
-  import_playbook: ../static-assignments/db-servers.yml
+- import_playbook: ../static-assignments/db-servers.yml
 
 
