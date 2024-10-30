@@ -1,7 +1,7 @@
 ---
 - hosts: all
   name: Include dynamic variables
-  become: yes
+  become: true
   tasks:
     - include_tasks: ../dynamic-assignments/env-vars.yml
       tags:

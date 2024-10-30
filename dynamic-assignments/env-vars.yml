@@ -1,18 +1,28 @@
 ---
-- name: collate variables from env specific file, if it exists
-  tasks:
-    - name: looping through list of available files
-      include_vars: "{{ item }}"
-      with_first_found:
-        - files:
-            - dev.yml
-            - stage.yml
-            - prod.yml
-            - uat.yml
-          paths:
-            - "{{ playbook_dir }}/../env-vars"
-      tags:
-        - always
+- name: Check if environment-specific files exist
+  stat:
+    path: "{{ playbook_dir }}/../env-vars/{{ item }}"
+  register: env_file
+  loop:
+    - dev.yml
+    - stage.yml
+    - prod.yml
+    - uat.yml
 
+- name: Initialize existing_files
+  set_fact:
+    existing_files: []
+  when: env_file.results | length > 0
 
+- name: Set facts for existing variable files
+  set_fact:
+    existing_files: "{{ existing_files + [item.item] }}"
+  when: item.stat.exists
+  loop: "{{ env_file.results }}"
 
+- name: Collate variables from existing environment-specific files
+  include_vars:
+    file: "{{ playbook_dir }}/../env-vars/{{ item }}"
+  loop: "{{ existing_files | default([]) }}"
+  tags:
+    - always
