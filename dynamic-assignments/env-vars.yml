@@ -1,6 +1,5 @@
 ---
-- hosts: all
-  name: collate variables from env specific file, if it exists
+- name: collate variables from env specific file, if it exists
   tasks:
     - name: looping through list of available files
       include_vars: "{{ item }}"
