@@ -1,29 +1,3 @@
-# ---
-# #- import_playbook: ../static-assignments/common-del.yml
-# - name: UAT Web Server Configuration
-#   hosts: uat-webservers
-#   become: true
-#   roles:
-#     - webserver
-# ---
-# - hosts: all
-#   name: Include dynamic variables
-#   become: yes
-#   tasks:
-#     - include_tasks: ../dynamic-assignments/env-vars.yml
-#       tags:
-#         - always
-
-# - import_playbook: ../static-assignments/common.yml
-
-# - import_playbook: ../static-assignments/uat_webservers.yml
-
-# - import_playbook: ../static-assignments/loadbalancers.yml
-
-# - import_playbook: ../static-assignments/db-servers.yml
-
-
-
 ---
 - hosts: all
   name: Include dynamic variables
@@ -33,12 +7,13 @@
       tags:
         - always
 
-- name: tooling
+- hosts: tooling
   import_playbook: ../static-assignments/uat-webservers.yml
 
-- name: nginx
+- hosts: nginx
   import_playbook: ../static-assignments/loadbalancers.yml
 
-- name: database
+- hosts: database
   import_playbook: ../static-assignments/db-servers.yml
+
 
