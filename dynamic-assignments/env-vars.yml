@@ -1,14 +1,18 @@
 ---
-- name: Collate variables from environment-specific file if it exists
+- name: collate variables from env specific file, if it exists
   hosts: all
   tasks:
-    - name: Loop through list of available files
+    - name: looping through list of available files
       include_vars: "{{ item }}"
       with_first_found:
-        - "{{ playbook_dir }}/../env-vars/stage.yml"
-        - "{{ playbook_dir }}/../env-vars/prod.yml"
-        - "{{ playbook_dir }}/../env-vars/uat.yml"
+        - files:
+            - dev.yml
+            - stage.yml
+            - prod.yml
+            - uat.yml
+          paths:
+            - "{{ playbook_dir }}/../env-vars"
       tags:
-        - always
+        - alwayys
 
 
