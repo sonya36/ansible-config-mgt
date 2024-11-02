@@ -1,7 +1,10 @@
 ---
 - hosts: all
-  name: Include dynamic variables
   become: true
+  vars:
+    # Define the absolute path to the env-vars directory
+    env_vars_dir: "/var/lib/jenkins/workspace/ansible-config-mgt_main/env-vars"
+
   tasks:
     - include_tasks: ../dynamic-assignments/env-vars.yml
       tags:
@@ -12,6 +15,4 @@
 - import_playbook: ../static-assignments/loadbalancers.yml
 
 - import_playbook: ../static-assignments/db-servers.yml
-
-
 
