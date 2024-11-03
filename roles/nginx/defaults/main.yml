@@ -88,7 +88,7 @@ nginx_upstreams:
     strategy: "ip_hash"  # Load balancing strategy
     keepalive: 16         # Optional: number of idle keepalive connections
     servers:
-      - ip: 172.31.44.244
+      - ip: 172.31.45.158
         weight: 3
       - ip: 172.31.41.20
         weight: 3
