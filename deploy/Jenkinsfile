@@ -61,14 +61,6 @@ pipeline {
         stage('Run Ansible playbook') {
             steps {
                 sshagent(['private-key']) {
-                script {
-                    def inventoryPath = "${env.WORKSPACE}/${params.inventory}"
-
-                    // Ensure the inventory file exists before proceeding
-                    if (!fileExists(inventoryPath)) {
-                        error "Inventory file ${inventoryPath} does not exist!"
-                    }
-
                     ansiblePlaybook(
                         become: true,
                         credentialsId: 'private-key',
