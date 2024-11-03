@@ -6,11 +6,10 @@ pipeline {
         ANSIBLE_HOST_KEY_CHECKING = 'False'
     }
 
-   parameters {
-   string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
-   string(name: 'ansible_tags', defaultValue: 'webserver', description: 'Ansible tags to run specific roles or tasks')
-   }
-
+    parameters {
+        string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
+        string(name: 'ansible_tags', defaultValue: 'webserver', description: 'Ansible tags to run specific roles or tasks')
+    }
 
     stages {
         stage("Initial cleanup") {
@@ -68,8 +67,8 @@ pipeline {
                         disableHostKeyChecking: true,
                         installation: 'ansible',
                         inventory: "${WORKSPACE}/${params.inventory}",
-                        playbook: "${WORKSPACE}/playbooks/site.yml"
-                        tags: "${params.ansible_tags}"
+                        playbook: "${WORKSPACE}/playbooks/site.yml",
+                        tags: "${params.ansible_tags}" // <-- Added comma before tags
                     )
                 }
             }
@@ -82,7 +81,3 @@ pipeline {
         }
     }
 }
-
-
-
-
