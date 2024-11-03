@@ -66,8 +66,8 @@ pipeline {
                         credentialsId: 'private-key',
                         disableHostKeyChecking: true,
                         installation: 'ansible',
-                        inventory: "${WORKSPACE}/${params.inventory}",
-                        playbook: "${WORKSPACE}/playbooks/site.yml",
+                        inventory: "${env.WORKSPACE}/${params.inventory}",
+                        playbook: "${env.WORKSPACE}/playbooks/site.yml",
                         tags: "${params.ansible_tags}" // <-- Added comma before tags
                     )
                 }
