@@ -13,11 +13,11 @@
 # Import playbooks with specific tags
 - import_playbook: ../static-assignments/uat-webservers.yml
   tags:
-    - webserver
+    - tooling
 
 - import_playbook: ../static-assignments/loadbalancers.yml
   tags:
-    - loadbalancer
+    - nginx
 
 - import_playbook: ../static-assignments/db-servers.yml
   tags:
