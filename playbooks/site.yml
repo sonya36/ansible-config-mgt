@@ -10,9 +10,17 @@
       tags:
         - always
 
+# Import playbooks with specific tags
 - import_playbook: ../static-assignments/uat-webservers.yml
+  tags:
+    - webserver
 
 - import_playbook: ../static-assignments/loadbalancers.yml
+  tags:
+    - loadbalancer
 
 - import_playbook: ../static-assignments/db-servers.yml
+  tags:
+    - database
+
 
