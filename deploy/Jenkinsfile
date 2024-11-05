@@ -11,8 +11,9 @@ pipeline {
             steps {
                 script {
                     // Corrected command with proper spacing and quotes
-                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@172.31.43.239 "echo EC2 Connection Successful"'
-                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.44.244 "echo Ubuntu Connection Successful"'
+                    sh 'ssh -o StrictHostKeyChecking=no -vvv ec2-user@172.31.43.239 "echo EC2 Connection Successful"'
+
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.41.45 "echo Ubuntu Connection Successful"'
                 }
             }
         }
@@ -51,7 +52,7 @@ pipeline {
                     def hosts = [
                         [group: 'tooling', ip: '172.31.43.239', user: 'ec2-user'],
                         [group: 'tooling', ip: '172.31.35.14', user: 'ec2-user'],
-                        [group: 'nginx', ip: '172.31.44.244', user: 'ubuntu'],
+                        [group: 'nginx', ip: '172.31.41.45', user: 'ubuntu'],
                         [group: 'database', ip: '172.31.33.99', user: 'ubuntu']
                     ]
                     
@@ -73,7 +74,7 @@ pipeline {
                         disableHostKeyChecking: true,
                         installation: 'ansible',
                         inventory: "${WORKSPACE}/inventory/dev.ini",
-                        playbook: "${env.WORKSPACE}/playbooks/site.yml",
+                        playbook: "${WORKSPACE}/playbooks/site.yml",
                     )
                 }
             }
