@@ -6,16 +6,17 @@ pipeline {
         ANSIBLE_HOST_KEY_CHECKING = 'False'
     }
 
-      
     stages {
         stage('Test SSH Connection') {
             steps {
                 script {
-                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@172.31.43.239"echo EC2 Connection Successful"'
-                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.44.244"echo Ubuntu Connection Successful"'
+                    // Corrected command with proper spacing and quotes
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@172.31.43.239 "echo EC2 Connection Successful"'
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.44.244 "echo Ubuntu Connection Successful"'
                 }
             }
         }
+
         stage("Initial cleanup") {
             steps {
                 dir("${WORKSPACE}") {
