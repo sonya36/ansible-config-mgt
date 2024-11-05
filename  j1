@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+
+    environment {
+        ANSIBLE_CONFIG = "${WORKSPACE}/deploy/ansible.cfg"
+        ANSIBLE_HOST_KEY_CHECKING = 'False'
+    }
+
+    parameters {
+        string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
+        string(name: 'ansible_tags', defaultValue: 'webserver', description: 'Ansible tags to run specific roles or tasks')
+    }
+
+    stages {
+        stage("Initial cleanup") {
+            steps {
+                dir("${WORKSPACE}") {
+                    deleteDir() // Cleans up the workspace before starting the build
+                }
+            }
+        }
+
+        stage('Checkout SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
+            }
+        }
+
+        stage('Prepare Ansible For Execution') {
+            steps {
+                // Display current workspace for debugging
+                sh 'echo ${WORKSPACE}'
+                
+                // Update or set the roles_path in ansible.cfg
+                sh '''
+                    # Ensure the roles_path is either added or updated
+                    sed -i '/^roles_path=/d' "${WORKSPACE}/deploy/ansible.cfg"
+                    echo "roles_path=${WORKSPACE}/roles" >> "${WORKSPACE}/deploy/ansible.cfg"
+                '''
+            }
+        }
+
+        stage('Test SSH Connections') {
+            steps {
+                script {
+                    def hosts = [
+                        [group: 'tooling', ip: '172.31.45.158', user: 'ec2-user'],
+                        [group: 'nginx', ip: '172.31.44.244', user: 'ubuntu'],
+                        [group: 'database', ip: '172.31.40.191', user: 'ubuntu']
+                    ]
+                    
+                    sshagent(['private-key']) {
+                        for (host in hosts) {
+                            sh "ssh -o StrictHostKeyChecking=no ${host.user}@${host.ip} exit"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Run Ansible playbook') {
+            steps {
+                sshagent(['private-key']) {
+                    ansiblePlaybook(
+                        become: true,
+                        credentialsId: 'private-key',
+                        disableHostKeyChecking: true,
+                        installation: 'ansible',
+                        inventory: "${env.WORKSPACE}/${params.inventory}",
+                        playbook: "${env.WORKSPACE}/playbooks/site.yml",
+                        tags: "${params.ansible_tags}" // <-- Added comma before tags
+                    )
+                }
+            }
+        }
+
+        stage('Clean Workspace after build') {
+            steps {
+                cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenUnstable: true, deleteDirs: true)
+            }
+        }
+    }
+}
