@@ -5,6 +5,8 @@ pipeline {
         ANSIBLE_CONFIG = "${WORKSPACE}/deploy/ansible.cfg"
         ANSIBLE_HOST_KEY_CHECKING = 'False'
     }
+
+      
     stages {
         stage('Test SSH Connection') {
             steps {
@@ -14,8 +16,6 @@ pipeline {
                 }
             }
         }
-    }
-    stages {
         stage("Initial cleanup") {
             steps {
                 dir("${WORKSPACE}") {
