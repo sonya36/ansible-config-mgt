@@ -94,7 +94,7 @@ pipeline {
                     sh 'echo "Private key path:" && ls -l /var/lib/jenkins/.ssh/project_key.pem'
                     sh 'echo "Private key content:" && cat /var/lib/jenkins/.ssh/project_key.pem'
 
-                    sshagent(['private-key']) {
+                    sshagent(credentials:['private-key']) {
                         for (host in hosts) {
                             try {
                                 // Debug SSH connection attempt
