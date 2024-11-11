@@ -46,6 +46,24 @@ pipeline {
             }
         }
 
+        // stage('Test SSH Connections') {
+        //     steps {
+        //         script {
+        //             def hosts = [
+        //                 [group: 'tooling', ip: '172.31.43.239', user: 'ec2-user'],
+        //                 [group: 'tooling', ip: '172.31.35.14', user: 'ec2-user'],
+        //                 [group: 'nginx', ip: '172.31.41.45', user: 'ubuntu'],
+        //                 [group: 'database', ip: '172.31.33.99', user: 'ubuntu']
+        //             ]
+                    
+        //             sshagent(['private-key']) {
+        //                 for (host in hosts) {
+        //                     sh "ssh -o StrictHostKeyChecking=no ${host.user}@${host.ip} exit"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         stage('Test SSH Connections') {
             steps {
                 script {
@@ -56,14 +74,44 @@ pipeline {
                         [group: 'database', ip: '172.31.33.99', user: 'ubuntu']
                     ]
                     
+                    // Display SSH private key path and permissions (debugging)
+                    sh 'echo "Private key path:" && ls -l /var/lib/jenkins/.ssh/project_key.pem'
+                    sh 'echo "Private key content:" && cat /var/lib/jenkins/.ssh/project_key.pem'
+
                     sshagent(['private-key']) {
                         for (host in hosts) {
-                            sh "ssh -o StrictHostKeyChecking=no ${host.user}@${host.ip} exit"
+                            try {
+                                // Debug SSH connection attempt
+                                sh "echo 'Testing SSH connection to ${host.user}@${host.ip}'"
+                                sh "ssh -o StrictHostKeyChecking=no ${host.user}@${host.ip} exit"
+                            } catch (Exception e) {
+                                echo "Failed to connect to ${host.user}@${host.ip}: ${e.getMessage()}"
+                            }
                         }
                     }
                 }
             }
         }
+
+        stage('Checkout SCM') {
+            steps {
+                script {
+                    // Debugging Git repository URL and branch
+                    echo "Git Repository URL: https://github.com/sonya36/ansible-config-mgt.git"
+                    echo "Git Branch: main"
+                    
+                    // Perform git checkout and debug
+                    git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
+                    
+                    // Verify checkout success
+                    sh 'echo "Checked out SCM successfully"'
+                    sh 'ls -l'
+                    sh 'cat deploy/ansible.cfg'  // Display ansible.cfg to ensure it exists
+                }
+            }
+        }
+
+
 
         stage('Run Ansible playbook') {
             steps {
