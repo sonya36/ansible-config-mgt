@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     // Corrected command with proper spacing and quotes
-                    sh 'ssh -o StrictHostKeyChecking=no -vvv ec2-user@172.31.43.239 "echo EC2 Connection Successful"'
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@172.31.43.239 "echo EC2 Connection Successful"'
 
                     sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.41.45 "echo Ubuntu Connection Successful"'
                 }
