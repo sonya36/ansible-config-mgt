@@ -26,12 +26,28 @@ pipeline {
             }
         }
 
+        // stage('Checkout SCM') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
+        //     }
+        // }
         stage('Checkout SCM') {
             steps {
-                git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
+                script {
+                    // Debugging Git repository URL and branch
+                    echo "Git Repository URL: https://github.com/sonya36/ansible-config-mgt.git"
+                    echo "Git Branch: main"
+                    
+                    // Perform git checkout and debug
+                    git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
+                    
+                    // Verify checkout success
+                    sh 'echo "Checked out SCM successfully"'
+                    sh 'ls -l'
+                    sh 'cat deploy/ansible.cfg'  // Display ansible.cfg to ensure it exists
+                }
             }
         }
-
         stage('Prepare Ansible For Execution') {
             steps {
                 // Display current workspace for debugging
@@ -93,23 +109,7 @@ pipeline {
             }
         }
 
-        stage('Checkout SCM') {
-            steps {
-                script {
-                    // Debugging Git repository URL and branch
-                    echo "Git Repository URL: https://github.com/sonya36/ansible-config-mgt.git"
-                    echo "Git Branch: main"
-                    
-                    // Perform git checkout and debug
-                    git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
-                    
-                    // Verify checkout success
-                    sh 'echo "Checked out SCM successfully"'
-                    sh 'ls -l'
-                    sh 'cat deploy/ansible.cfg'  // Display ansible.cfg to ensure it exists
-                }
-            }
-        }
+    
 
 
 
