@@ -10,9 +10,8 @@ pipeline {
         stage('Test SSH Connection') {
             steps {
                 script {
-                    // Corrected command with proper spacing and quotes
+                    // Test SSH connection for different hosts
                     sh 'ssh -o StrictHostKeyChecking=no ec2-user@172.31.43.239 "echo EC2 Connection Successful"'
-
                     sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.41.45 "echo Ubuntu Connection Successful"'
                 }
             }
@@ -26,11 +25,6 @@ pipeline {
             }
         }
 
-        // stage('Checkout SCM') {
-        //     steps {
-        //         git branch: 'main', url: 'https://github.com/sonya36/ansible-config-mgt.git'
-        //     }
-        // }
         stage('Checkout SCM') {
             steps {
                 script {
@@ -48,6 +42,7 @@ pipeline {
                 }
             }
         }
+
         stage('Prepare Ansible For Execution') {
             steps {
                 // Display current workspace for debugging
@@ -62,24 +57,6 @@ pipeline {
             }
         }
 
-        // stage('Test SSH Connections') {
-        //     steps {
-        //         script {
-        //             def hosts = [
-        //                 [group: 'tooling', ip: '172.31.43.239', user: 'ec2-user'],
-        //                 [group: 'tooling', ip: '172.31.35.14', user: 'ec2-user'],
-        //                 [group: 'nginx', ip: '172.31.41.45', user: 'ubuntu'],
-        //                 [group: 'database', ip: '172.31.33.99', user: 'ubuntu']
-        //             ]
-                    
-        //             sshagent(['private-key']) {
-        //                 for (host in hosts) {
-        //                     sh "ssh -o StrictHostKeyChecking=no ${host.user}@${host.ip} exit"
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
         stage('Test SSH Connections') {
             steps {
                 script {
@@ -90,15 +67,14 @@ pipeline {
                         [group: 'database', ip: '172.31.33.99', user: 'ubuntu']
                     ]
                     
-                    // Display SSH private key path and permissions (debugging)
+                    // Debug SSH private key path (only once for verification)
                     sh 'echo "Private key path:" && ls -l /var/lib/jenkins/.ssh/project_key.pem'
-                    sh 'echo "Private key content:" && cat /var/lib/jenkins/.ssh/project_key.pem'
 
                     sshagent(credentials:['private-key']) {
                         for (host in hosts) {
                             try {
                                 // Debug SSH connection attempt
-                                sh "echo 'Testing SSH connection to ${host.user}@${host.ip}'"
+                                echo "Testing SSH connection to ${host.user}@${host.ip}"
                                 sh "ssh -o StrictHostKeyChecking=no ${host.user}@${host.ip} exit"
                             } catch (Exception e) {
                                 echo "Failed to connect to ${host.user}@${host.ip}: ${e.getMessage()}"
@@ -108,10 +84,6 @@ pipeline {
                 }
             }
         }
-
-    
-
-
 
         stage('Run Ansible playbook') {
             steps {
@@ -132,6 +104,7 @@ pipeline {
             steps {
                 cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenUnstable: true, deleteDirs: true)
             }
-        }
+        } 
     }
 }
+
